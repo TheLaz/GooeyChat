@@ -1,0 +1,326 @@
+<!--
+    Chat Animation Demo
+    https://dribbble.com/shots/1901175-Chat-Animation
+
+    Talk: "Gooey UI"
+    FooCafe - Copenhagen
+-->
+
+<html>
+    <head>
+        <title>
+            Foo Cafe - Gooey UI Demo
+        </title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
+
+        <style>
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(45deg, #636f85, #6960a0);
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font: 15px Arial;
+            line-height: 35px;
+        }
+
+        body * {
+            box-sizing: border-box;
+
+        }
+
+        .card {
+            position: relative;
+            background: #fafafc;
+            border: 1px solid #d7d7dd;
+            width: 388px;
+            height: 620px;
+            margin: 5% auto;
+        }
+
+        .card::before {
+            content: " ";
+            position: absolute;
+            top: 0;
+            background-color: #1CC6AE;
+            height: 5px;
+            width: 100%;
+        }
+
+        .card .details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 22px 0 22px;
+            height: 80px;
+        }
+
+        .card .details .inner {
+            display: flex;
+            justify-content: space-between;
+            color: #D7D7DD;
+            position: relative;
+        }
+
+        .card .details .inner .person {
+            text-align: right;
+            line-height: 28px;
+        }
+
+        .card .details .inner .title {
+            text-transform: uppercase;
+            color: #B1A9A9;
+        }
+
+        .card .details .inner .name {
+            color: #59617b;
+            font-size: 20px;
+            margin-top: 8px;
+            line-height: 2px;
+        }
+
+        .card .details .inner .name::before {
+            content: " ";
+            width: 4px;
+            height: 4px;
+            border: 2px solid #00B570;
+            border-radius: 50px;
+            position: absolute;
+            left: -13px;
+            top: 34px;
+        }
+
+        .card .avatar {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            border-radius: 30px;
+            margin-left: 5px;
+        }
+
+        .card .messages {
+            width: 100%;
+            list-style-type: none;
+            padding: 10px 15px;
+            height: 425px;
+        }
+
+        .card .messages .message,
+        .flying-message {
+            text-align: center;
+            padding: 6px 30px;
+            margin-bottom: 15px;
+            clear: both;
+            color: #2B2342;
+        }
+
+        .card .messages .message--hidden {
+            visibility: hidden;
+        }
+
+        .card .messages .message--recieve {
+            border: 1px solid #D7D7DD;
+            background-color: #FAFAFC;
+            float: left;
+        }
+
+        .card .messages .message--sent {
+            background-color: #E9EAF3;
+            float: right;
+        }
+
+        .card .canvas {
+            -webkit-filter: url("#filter-goo-1");
+            filter: url("#filter-goo-1");
+            position: relative;
+            height: 522px;
+        }
+
+        .card .footer {
+            width: 100%;
+            background-color: #E9EAF3;
+            height: 65px;
+            bottom: 0;
+            position: absolute;
+            padding: 15px 25px;
+            z-index: 1;
+        }
+
+        .card .footer .paper-box ,
+        .fa-camera-retro {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .card .footer .btn-send {
+            position: absolute;
+            right: 20px;
+            border-radius: 50px;
+            background-color: #696996;
+            color: #fff;
+            border: 0;
+            font-size: 15px;
+            outline: none;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .card .footer .fa-camera-retro {
+            color: #59617B;
+            margin-right: 15px;
+        }
+
+        .flying-message,
+        .paper-box .textbox {
+            background-color: #E9EAF3;
+            border: 0;
+            color: #59617b;
+            font: 15px Arial;
+            outline: none;
+            line-height: 35px;
+            border-radius: 30px;
+        }
+
+        .paper-box .textbox {
+            width: 100%;
+            margin: 0 10px;
+        }
+
+        .flying-message {
+            position: fixed;
+            z-index: 2;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div class="card">
+            <div class="details">
+                <i class="fa fa-angle-left fa-2x"></i>
+                <div class="inner">
+                    <div class="person">
+                        <div class="title">status</div>
+                        <div class="name">Marin Roser</div>
+                    </div>
+                    <img class="avatar" src="http://bootdey.com/img/Content/avatar/avatar5.png"/>
+                </div>
+            </div>
+
+            <div class="canvas">
+                <ul class="messages">
+                    <li class="message message--recieve">
+                        Hey, are you game for beers tonight ?
+                    </li>
+                    <li class="message message--sent">
+                        Yes !
+                    </li>
+                </ul>
+                <div class="footer">
+                    <i class="fa fa-camera-retro fa-2x"></i>
+                    <div class="paper-box">
+                        <input id="paper" type="text" class="textbox" placeholder="write your message ..."/>
+                    </div>
+                    <button id="send" class="btn-send">
+                        <i class="fa fa-paper-plane fa-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var canvas = document.querySelector('.canvas');
+            var paperBox = document.querySelector('.paper-box');
+            var paper = document.getElementById('paper');
+            var messages = document.querySelector('.messages');
+
+            (function () {
+
+                function onEnterKey (event) {
+                    if (event.keyCode !== 13) {
+                        return;
+                    }
+
+                    sendMessage();
+                }
+
+                function onMessageLanded () {
+                    var message = document.querySelector('.message--hidden');
+                    message.className = 'message message--sent';
+                    document.querySelector('.flying-message').remove();
+                    paper.value = '';
+                }
+
+                function sendMessage () {
+                    if (paper.value.trim() === '') {
+                        return;
+                    }
+
+                    /*
+                        Create a flying message with content
+                    */
+
+                    var flyingMessage = document.createElement('div');
+                    flyingMessage.className = 'message flying-message';
+                    flyingMessage.innerHTML = paper.value;
+
+                    /*
+                        This is where the flying message is gonna fly to
+                    */
+
+                    var messagePlaceholder = document.createElement('li');
+                    messagePlaceholder.className = 'message message--sent message--hidden';
+                    messagePlaceholder.appendChild(document.createTextNode(paper.value));
+                    messages.appendChild(messagePlaceholder);
+
+                    /*
+                        Show flying message
+                    */
+
+                    var flyingDestination = messagePlaceholder.getBoundingClientRect();
+                    var flyingHome = paper.getBoundingClientRect();
+
+                    flyingMessage.style.top = flyingHome.top - 4;
+                    flyingMessage.style.left = flyingHome.left - 22;
+
+                    canvas.appendChild(flyingMessage);
+
+                    /*
+                        Time to Fly
+                    */
+
+                    var flyingMessageTimeLine = new TimelineMax({
+                        onComplete: onMessageLanded
+                    });
+
+                    flyingMessageTimeLine.to(flyingMessage, 1, {
+                        ease: Circ.easeIn,
+                            top: flyingDestination.top,
+                            left: flyingDestination.left
+                        })
+                        .add("bubble", 0.2)
+                        .to(flyingMessage, 2, {'border-radius': '0'}, "bubble");
+
+                    paper.value = ' ';
+                }
+
+                document.getElementById('send').addEventListener('click',   sendMessage);
+                document.getElementById('paper').addEventListener('keyup',  onEnterKey);
+            })();
+        </script>
+
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="svg-filters">
+            <defs>
+                <filter id="filter-goo-1">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"></feGaussianBlur>
+                    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"></feColorMatrix>
+                    <feComposite in="SourceGraphic" in2="goo"></feComposite>
+                </filter>
+            </defs>
+        </svg>
+    </body>
+</html>
